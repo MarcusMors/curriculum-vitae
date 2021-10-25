@@ -15,6 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@font-face {
+	font-family: "rubik";
+	src: url("../assets/fonts/poppins-regular.woff2") format("woff2"),
+		url("../assets/fonts/poppins-regular.woff") format("woff");
+	font-weight: 400;
+	font-style: normal;
+}
+
 body {
 	background-color: black;
+	font: "rubik";
 }

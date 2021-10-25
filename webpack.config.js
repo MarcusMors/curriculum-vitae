@@ -1,75 +1,56 @@
-const path = require("path")
-const HtmlPlugin = require("html-webpack-plugin")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const copyPlugin = require("copy-webpack-plugin")
+// webpack = require("webpack")
+// const CopyPlugin = require("copy-webpack-plugin")
 
-module.exports = {
-	// mode: "development",
-	//   entry: path.join(__dirname, 'app', 'index'),
-	entry: "./src/index.js",
-	watch: true,
+const path = require("path")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const BundleAnalyzerPlugin =
+	require("webpack-bundle-analyzer").BundleAnalyzerPlugin
+const { CleanWebpackPlugin } = require("clean-webpack-plugin")
+
+const config = {
+	entry: "./src/index.ts",
 	output: {
-		path: path.join(__dirname, "dist"),
-		publicPath: "/dist/",
+		path: path.resolve(__dirname, "dist"),
 		filename: "bundle.js",
-		chunkFilename: "[name].js",
+	},
+	resolve: {
+		extensions: [".tsx", ".ts", ".js"],
 	},
 	module: {
 		rules: [
 			{
-				test: /\.m?js$/,
-				include: [path.resolve(__dirname, "app")],
-				exclude: [path.resolve(__dirname, "node_modules")],
-				use: {
-					loader: "babel-loader",
-				},
-				// query: {
-				// 	presets: [
-				// 		[
-				// 			"@babel/env",
-				// 			{
-				// 				targets: {
-				// 					browsers: "last 2 chrome versions",
-				// 				},
-				// 			},
-				// 		],
-				// 	],
-				// },
+				test: /\.js$/,
+				use: "babel-loader",
+				exclude: /node_modules/,
 			},
 			{
-				test: /\.css|.styl$/i,
-				use: [
-					MiniCssExtractPlugin.loader,
-					"css-loader",
-					"stylus-loader",
-				],
+				test: /\.s?css|\.sass$/i,
+				use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+			},
+			{
+				test: /\.ts(x)?$/,
+				loader: "ts-loader",
+				exclude: /node_modules/,
 			},
 		],
 	},
 	plugins: [
-		new HtmlPlugin({
-			inject: "body",
-			template: path.resolve(__dirname, "./public/index.html"),
+		new HtmlWebpackPlugin({
+			inject: true,
+			template: "./public/index.html",
 			filename: "./index.html",
 		}),
 		new MiniCssExtractPlugin(),
-		new copyPlugin({
-			patterns: [
-				{
-					from: path.resolve(__dirname, "src/assets/images"),
-					to: "assets/images",
-				},
-			],
+		// new CopyPlugin({
+		// 	patterns: [{ from: "public/index.html" }],
+		// }),
+		new BundleAnalyzerPlugin({
+			analyzerMode: "static",
+			openAnalyzer: false,
 		}),
+		new CleanWebpackPlugin(),
 	],
-	resolve: {
-		extensions: [".json", ".js", ".jsx"],
-	},
-	devtool: "source-map",
-	devServer: {
-		contentBase: path.join(__dirname, "/dist/"),
-		inline: true,
-		host: "localhost",
-		port: 8080,
-	},
 }
+
+module.exports = config
